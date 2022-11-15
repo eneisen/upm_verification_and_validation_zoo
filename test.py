@@ -4,9 +4,10 @@ import typer
 def help():
      print("This is the list of commands: bla bla")
 
-def add_exhibit(exhibit_name: str, section_id: str):
+def add_exhibit(exhibit_name: str, section_id: int):
     print("Execute add_exhibit")
-    print("name of exhibit: " + exhibit_name + " section id: " + section_id)
+    print(type(section_id))
+    print("name of exhibit: " + exhibit_name + " section id: " + str(section_id))
 
 
 
@@ -25,7 +26,7 @@ def main(filename: str):
             if (arguments[0] == "help"):
                 help()
             elif (arguments[0] == "add_exhibit"):
-                add_exhibit(arguments[1], arguments[2])
+                add_exhibit(arguments[1], int(arguments[2]))
             else:
                 print(arguments[0])
 
