@@ -45,7 +45,7 @@ def assign_exhibit(exhibit_name: str, section_id: int):
 
 def unassign_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: unassign an exhibit to a section. Both arguments are mandatory.
-    if not section_id in range(0, 10): 
+    if not section_id in range(1, 10): 
         print("Error: Invalid section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
@@ -76,9 +76,9 @@ def rename_exhibit(exhibit_name: str, new_exhibit_name: str) -> None:
 
 def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int) -> None:
     # Description: move an exhibit to another section.
-    if not current_section_id in range(0, 10): 
+    if not current_section_id in range(1, 10): 
         print("Error: Invalid current section ID")
-    elif not new_section_id in range(0, 10): 
+    elif not new_section_id in range(1, 10): 
         print("Error: Invalid new section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
@@ -93,7 +93,7 @@ def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int
 
 def delete_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: delete an exhibit stored.
-    if not section_id in range(0, 10): 
+    if not section_id in range(1, 10): 
         print("Error: Invalid section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
