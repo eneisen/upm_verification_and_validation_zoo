@@ -12,4 +12,11 @@ add_animal cat cat_exhibition
 add_animal jaguar cat_exhibition
 add_animal tiger cat_exhibition
 add_animal lynx cat_exhibition
+unassign_exhibit fish_exhibit 1
+rename_exhibit fish_exhibit cute_fish_exhibit
+assign_exhibit cute_fish_exhibit 2
+move_exhibit cute_fish_exhibit 2 6
+add_exhibit china 5
+add_animal panda china
+delete_exhibit bird_exhibit 1
 report_zoo
