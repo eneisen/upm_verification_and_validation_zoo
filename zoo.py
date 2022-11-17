@@ -1,4 +1,5 @@
 import typer
+from typing import Optional
 import numpy as np
 
 ## Helper functions:
@@ -7,6 +8,38 @@ def find_section(exhibit_name: str):
     for i in range(1,9):
         if exhibit_name in zoo[i]:
             return i   
+
+def process_input(input):
+    # Split the line into words
+    arguments = input.split(" ")
+    print(f"Given Arguments: {arguments}")
+
+    if (arguments[0] == "help"):
+        help()
+    elif (arguments[0] == "add_exhibit"):
+        #add_exhibit(exhibit_name: str, section_id=None)
+        if len(arguments) > 2:
+            add_exhibit(arguments[1], int(arguments[2]))
+        else:
+            add_exhibit(arguments[1])
+    elif (arguments[0] == "assign_exhibit"):
+        #assign_exhibit(exhibit_name: str, section_id: int)
+        assign_exhibit(arguments[1], int(arguments[2]))
+    elif (arguments[0] == "unassign_exhibit"):
+        unassign_exhibit(arguments[1], int(arguments[2]))
+    elif (arguments[0] == "rename_exhibit"):
+        rename_exhibit(arguments[1], arguments[2])
+    elif (arguments[0] == "move_exhibit"):
+        move_exhibit(arguments[1], int(arguments[2]), int(arguments[3]))
+    elif (arguments[0] == "delete_exhibit"):
+        delete_exhibit(arguments[1], int(arguments[2]))
+    elif (arguments[0] == "add_animal"):
+        #add_animal(animal_name: str, exhibit_name: str)
+        add_animal(arguments[1], arguments[2])
+    elif (arguments[0] == "report_zoo"):
+        report_zoo()
+    else:
+        print("Unknown command. Please, enter help to check the available options.")
 
 
 def get_exhibit_names() -> list:
@@ -120,7 +153,7 @@ def report_zoo():
     print(zoo)
 
 
-def main(filename: str):
+def main(filename: Optional[str] = typer.Argument(None)):
 
     # Define the dicts
     global zoo, unassigned_exhibits
@@ -137,46 +170,23 @@ def main(filename: str):
     }
     unassigned_exhibits = {}
 
-    with open(str(filename + ".txt")) as file:
+    
+    if filename:
+        with open(str(filename + ".txt")) as file:
 
-        # Process each line after the other of the document
-        while (line := file.readline().rstrip()):
+            # Process each line after the other of the document
+            while (line := file.readline().rstrip()):
 
-            # Convert the characters in line to lowercase to avoid case mismatch
-            line = line.lower()
+                # Convert the characters in line to lowercase to avoid case mismatch
+                line = line.lower()
 
-            # Split the line into words
-            arguments = line.split(" ")
-
-            if (arguments[0] == "help"):
-                help()
-            elif (arguments[0] == "add_exhibit"):
-                #add_exhibit(exhibit_name: str, section_id=None)
-                if len(arguments) > 2:
-                    add_exhibit(arguments[1], int(arguments[2]))
-                else:
-                    add_exhibit(arguments[1])
-            elif (arguments[0] == "assign_exhibit"):
-                #assign_exhibit(exhibit_name: str, section_id: int)
-                assign_exhibit(arguments[1], int(arguments[2]))
-            elif (arguments[0] == "unassign_exhibit"):
-                unassign_exhibit(arguments[1], int(arguments[2]))
-            elif (arguments[0] == "rename_exhibit"):
-                rename_exhibit(arguments[1], arguments[2])
-            elif (arguments[0] == "move_exhibit"):
-                move_exhibit(arguments[1], int(arguments[2]), int(arguments[3]))
-            elif (arguments[0] == "delete_exhibit"):
-                delete_exhibit(arguments[1], int(arguments[2]))
-            elif (arguments[0] == "add_animal"):
-                #add_animal(animal_name: str, exhibit_name: str)
-                add_animal(arguments[1], arguments[2])
-            elif (arguments[0] == "report_zoo"):
-                report_zoo()
-            else:
-                print(arguments[0])
-
-                
-
+                process_input(line)         
+    else:
+        while True:
+            inp = input("Write commands (command argument_1 argument_2) [to exit type 'quit']: ")
+            if inp == "quit":
+                break
+            process_input(inp)               
     
 if __name__ == '__main__':
     typer.run(main)
