@@ -156,10 +156,7 @@ def report_zoo():
     print(zoo)
 
 
-def main(filename: Optional[str] = typer.Argument(None), function_name: Optional[str] = typer.Option(None),
-    exhibit_name: Optional[str] = typer.Option(None), animal_name: Optional[str] = typer.Option(None)):
-# def main(filename: str = typer.Option(...), function_name: str = typer.Option(...),
-#     argument_1: str = typer.Option(...), argument_2: str = typer.Option(...)):
+def main(filename: Optional[str] = typer.Argument(None)):
 
     # Define the dicts
     global zoo, unassigned_exhibits
