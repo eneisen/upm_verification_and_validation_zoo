@@ -8,9 +8,6 @@ def find_section(exhibit_name: str):
     for i in range(1,9):
         if exhibit_name in zoo[i]:
             return i   
-    
-def func(inp):
-    print(f"you said: {inp}")
 
 def process_input(input):
     # Split the line into words
