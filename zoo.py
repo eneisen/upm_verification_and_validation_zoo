@@ -1,6 +1,7 @@
 import typer
 from typing import Optional
 import numpy as np
+import sys
 
 ## Helper functions:
 
@@ -17,11 +18,23 @@ def process_input(input):
     if (arguments[0] == "help"):
         help()
     elif (arguments[0] == "add_exhibit"):
-        #add_exhibit(exhibit_name: str, section_id=None)
-        if len(arguments) > 2:
-            add_exhibit(arguments[1], int(arguments[2]))
-        else:
+        # check count of arguments
+        if len(arguments) == 3:
+            # Try to cast argument[2] to int
+            try: 
+                int(arguments[2])
+            except ValueError as e:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+                return
+            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int)):
+                add_exhibit(arguments[1], int(arguments[2]))
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        elif len(arguments) == 2:
             add_exhibit(arguments[1])
+        # if more than 3 and less than 2 argument is given - print warning
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "assign_exhibit"):
         #assign_exhibit(exhibit_name: str, section_id: int)
         assign_exhibit(arguments[1], int(arguments[2]))
@@ -169,7 +182,6 @@ def main(filename: Optional[str] = typer.Argument(None)):
             9: {},
     }
     unassigned_exhibits = {}
-
     
     if filename:
         with open(str(filename + ".txt")) as file:
