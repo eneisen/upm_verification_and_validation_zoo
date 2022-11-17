@@ -1,1 +1,3 @@
 - arguments with more than one word are wrongly processed!
+- no cmd support added
+- error handling of input arguments
