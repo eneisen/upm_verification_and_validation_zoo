@@ -26,7 +26,7 @@ def process_input(input):
             except ValueError as e:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
                 return
-            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int)):
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
                 add_exhibit(arguments[1], int(arguments[2]))
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -45,7 +45,7 @@ def process_input(input):
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
                 return
             # check if arguments are valid 
-            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int)):
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
                 assign_exhibit(arguments[1], int(arguments[2]))
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -61,7 +61,7 @@ def process_input(input):
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
                 return
             # check if arguments are valid 
-            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int)):
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
                 unassign_exhibit(arguments[1], int(arguments[2]))
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -71,7 +71,7 @@ def process_input(input):
         # check correct number of arguments
         if len(arguments) == 3:
             # check if arguments are valid 
-            if (isinstance(arguments[1], str) and isinstance(arguments[2], str)):
+            if (arguments[1].isalnum() and arguments[2].isalnum()):
                 rename_exhibit(arguments[1], arguments[2])
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -88,7 +88,7 @@ def process_input(input):
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
                 return
             # check if arguments are valid 
-            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int) and isinstance(int(arguments[3]), int)):
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int) and isinstance(int(arguments[3]), int)):
                 move_exhibit(arguments[1], int(arguments[2]), int(arguments[3]))
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -104,7 +104,7 @@ def process_input(input):
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
                 return
             # check if arguments are valid 
-            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int)):
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
                 delete_exhibit(arguments[1], int(arguments[2]))
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -114,7 +114,7 @@ def process_input(input):
         # check correct number of arguments
         if len(arguments) == 3:
             # check if arguments are valid 
-            if (isinstance(arguments[1], str) and isinstance(arguments[2], str)):
+            if (arguments[1].isalnum() and arguments[2].isalnum()):
                 add_animal(arguments[1], arguments[2])
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
