@@ -20,13 +20,13 @@ def process_input(input):
     elif (arguments[0] == "add_exhibit"):
         # check count of arguments
         if len(arguments) == 3:
-            # Try to cast argument[2] to int
+            # Try to cast argument[2] to int 
             try: 
                 int(arguments[2])
             except ValueError as e:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
                 return
-            if (isinstance(arguments[1], str) and isinstance(int(arguments[2]), int)):
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
                 add_exhibit(arguments[1], int(arguments[2]))
             else:
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
@@ -36,19 +36,90 @@ def process_input(input):
         else:
             print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "assign_exhibit"):
-        #assign_exhibit(exhibit_name: str, section_id: int)
-        assign_exhibit(arguments[1], int(arguments[2]))
+        # check correct number of arguments
+        if len(arguments) == 3:
+            # Try to cast argument[2] to int  
+            try: 
+                int(arguments[2])
+            except ValueError as e:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+                return
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
+                assign_exhibit(arguments[1], int(arguments[2]))
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "unassign_exhibit"):
-        unassign_exhibit(arguments[1], int(arguments[2]))
+        # check correct number of arguments
+        if len(arguments) == 3:
+            # Try to cast argument[2] to int  
+            try: 
+                int(arguments[2])
+            except ValueError as e:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+                return
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
+                unassign_exhibit(arguments[1], int(arguments[2]))
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "rename_exhibit"):
-        rename_exhibit(arguments[1], arguments[2])
+        # check correct number of arguments
+        if len(arguments) == 3:
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and arguments[2].isalnum()):
+                rename_exhibit(arguments[1], arguments[2])
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "move_exhibit"):
-        move_exhibit(arguments[1], int(arguments[2]), int(arguments[3]))
+        # check correct number of arguments
+        if len(arguments) == 4:
+            # Try to cast argument[2] to int  
+            try: 
+                int(arguments[2])
+                int(arguments[3])
+            except ValueError as e:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+                return
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int) and isinstance(int(arguments[3]), int)):
+                move_exhibit(arguments[1], int(arguments[2]), int(arguments[3]))
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "delete_exhibit"):
-        delete_exhibit(arguments[1], int(arguments[2]))
+        # check correct number of arguments
+        if len(arguments) == 3:
+            # Try to cast argument[2] to int  
+            try: 
+                int(arguments[2])
+            except ValueError as e:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+                return
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
+                delete_exhibit(arguments[1], int(arguments[2]))
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "add_animal"):
-        #add_animal(animal_name: str, exhibit_name: str)
-        add_animal(arguments[1], arguments[2])
+        # check correct number of arguments
+        if len(arguments) == 3:
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and arguments[2].isalnum()):
+                add_animal(arguments[1], arguments[2])
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.") 
     elif (arguments[0] == "report_zoo"):
         report_zoo()
     else:
@@ -85,7 +156,7 @@ def assign_exhibit(exhibit_name: str, section_id: int):
             del unassigned_exhibits[exhibit_name]
             print("Exhibit " + exhibit_name + " added to section " + str(section_id))
         except Exception as e:
-            print("Exhibit name: " + exhibit_name + " not found in the list if unassigned exhibits")   
+            print("Exhibit name: " + exhibit_name + " not found in the list of unassigned exhibits")   
     else:
         print("Error: The section selected is full")
 
