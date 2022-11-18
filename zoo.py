@@ -122,6 +122,8 @@ def process_input(input):
             print("Incorrect number of arguments for the command.") 
     elif (arguments[0] == "report_zoo"):
         report_zoo()
+    elif (arguments[0] == "report_unassigned_exhibits"):
+        report_unassigned_exhibits()
     else:
         print("Unknown command. Please, enter help to check the available options.")
 
@@ -225,6 +227,12 @@ def add_animal(animal_name: str, exhibit_name: str):
     section_id = find_section(exhibit_name)
     if section_id == None:
         print("Exhibit name: " + exhibit_name + " not found in assigned exhibits")
+        if len(unassigned_exhibits[exhibit_name]) < 5:
+            unassigned_exhibits[exhibit_name].append(animal_name)
+            print("Animal " + animal_name + " added to unassigned exhibition " + exhibit_name)
+        else:
+            print("Error: The exhibit selected (" + exhibit_name + ") is full.")  
+            print("Animal " + animal_name + " cannot be added") 
     elif len(zoo[section_id][exhibit_name]) < 5:
         zoo[section_id][exhibit_name].append(animal_name)
         print("Animal " + animal_name + " added to exhibition " + exhibit_name)
@@ -232,9 +240,16 @@ def add_animal(animal_name: str, exhibit_name: str):
         print("Error: The exhibit selected (" + exhibit_name + ") is full.")  
         print("Animal " + animal_name + " cannot be added") 
 
+def delete_animal(animal_name: str, exhibit_name: str):
+    print('hello')
+
 def report_zoo():
     print("Current report of zoo: ")
     print(zoo)
+
+def report_unassigned_exhibits():
+    print("List of unassigned exhibits:")
+    print(unassigned_exhibits)
 
 
 def main(filename: Optional[str] = typer.Argument(None)):
