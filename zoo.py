@@ -120,6 +120,16 @@ def process_input(input):
                 print("At least one argument is invalid. Please, review the command arguments and try again.")
         else:
             print("Incorrect number of arguments for the command.") 
+    elif (arguments[0] == "delete_animal"):
+        # check correct number of arguments
+        if len(arguments) == 3:
+            # check if arguments are valid 
+            if (arguments[1].isalnum() and arguments[2].isalnum()):
+                delete_animal(arguments[1], arguments[2])
+            else:
+                print("At least one argument is invalid. Please, review the command arguments and try again.")
+        else:
+            print("Incorrect number of arguments for the command.")
     elif (arguments[0] == "report_zoo"):
         report_zoo()
     elif (arguments[0] == "report_unassigned_exhibits"):
@@ -132,6 +142,15 @@ def get_exhibit_names() -> list:
     assigned_names = [n for s in zoo.keys() for n in list(zoo[s].keys())]
     unassigned_names =  list(unassigned_exhibits.keys())
     return assigned_names + unassigned_names
+
+def get_assigned_animals() -> list:
+    assigned_animals = [a for s in zoo.keys() for n in zoo[s].keys() for a in zoo[s][n]]
+    return assigned_animals
+
+def get_unassigned_animals() -> list:
+    unassigned_animals = [a for s in unassigned_exhibits.keys() for a in unassigned_exhibits[s]]
+    return unassigned_animals
+
 
 ## Required functions:
 
@@ -241,7 +260,32 @@ def add_animal(animal_name: str, exhibit_name: str):
         print("Animal " + animal_name + " cannot be added") 
 
 def delete_animal(animal_name: str, exhibit_name: str):
-    print('hello')
+    # check if exhibit exits
+    if not exhibit_name in get_exhibit_names():
+        print("Error:  Exhibit not found")
+    # check if animal exists 
+    elif animal_name not in get_assigned_animals() and animal_name not in get_unassigned_animals():
+        print("Error: Animal " + animal_name + " not found")
+    else:
+        # get section_id of exibit if possible
+        section_id = find_section(exhibit_name)
+        # if no section_id exists, exhibit is unassigned
+        if section_id == None:
+            print("Animal: " + animal_name + " not found in assigned exhibits")
+            # check if animal exists in given exhibit
+            if animal_name in get_unassigned_animals():
+                unassigned_exhibits[exhibit_name].remove(animal_name)
+                print(f"{animal_name} was removed from unassigned exhibit {exhibit_name}")
+            else:
+                print(f"Error: {animal_name} was not found in unassigned exhibit {exhibit_name}")
+        # section_id exists
+        else:
+            # check if animal exists in given exhibit
+            if animal_name in get_assigned_animals():
+                zoo[section_id][exhibit_name].remove(animal_name)
+                print(f"{animal_name} was removed from assigned exhibit {exhibit_name}")
+            else:
+                print(f"Error: {animal_name} was not found in assigned exhibit {exhibit_name}")
 
 def report_zoo():
     print("Current report of zoo: ")
