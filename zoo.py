@@ -101,7 +101,18 @@ def zoo_structure_is_valid(input_zoo: dict) -> bool:
 
 # ----- Required functions -----
 def help():
-    print("This is the list of commands: bla bla")
+    print("List of available commands: \n"
+    + "help – Shows the list of commands available \n"
+    + "add_exhibit <exhibit_name> <section_id> - Adds an exhibit to a section \n"
+    + "assign_exhibit <exhibit_name> <section_id> – Assigns an exhibit to a section \n"
+    + "unassign_exhibit <exhibit_name> <section_id> - Unassigns an exhibit to a section \n"
+    + "rename_exhibit <exhibit_name> <new_exhibit_name>  – Renames an exhibit stored \n"
+    + "move_exhibit <exhibit_name> <current_section_id> <new_section_id>  - Move an exhibit to another section \n"
+    + "delete_exhibit <exhibit_name> <section_id>  – Deletes an exhibit stored \n"
+    + "add_animal <animal_name> <exhibit_name> –  Adds an animal to an exhibit \n"
+    + "delete_animal <animal_name> <exhibit_name> – Deletes an animal from an exhibit \n"
+    + "save_zoo <zoo_name> – Saves the current information about the zoo in a JASON file, name for the file is optional \n"
+    + "load_zoo <zoo_name> – Loads a JASON file containing the zoo information to memory")
 
 def add_exhibit(exhibit_name: str, section_id=None):
     if (section_id != None and section_id in SECTION_NAMES):
