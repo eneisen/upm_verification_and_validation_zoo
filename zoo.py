@@ -1,142 +1,22 @@
-import typer
 from typing import Optional
 import numpy as np
-import sys
+import typer
+import json
+import os
 
-## Helper functions:
+# ----- Constants -----
+arg_parser = None
+zoo = None 
+unassigned_exhibits = None
+MAX_ANIMAL_PER_EXHIBIT = 5
+MAX_EXHIBITS_PER_SECTION = 4
+SECTION_NAMES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+# ----- Helper functions -----
 def find_section(exhibit_name: str):
-    for i in range(1,9):
-        if exhibit_name in zoo[i]:
-            return i   
-
-def process_input(input):
-    # Split the line into words
-    arguments = input.split(" ")
-    print(f"Given Arguments: {arguments}")
-
-    if (arguments[0] == "help"):
-        help()
-    elif (arguments[0] == "add_exhibit"):
-        # check count of arguments
-        if len(arguments) == 3:
-            # Try to cast argument[2] to int 
-            try: 
-                int(arguments[2])
-            except ValueError as e:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-                return
-            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
-                add_exhibit(arguments[1], int(arguments[2]))
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        elif len(arguments) == 2:
-            add_exhibit(arguments[1])
-        # if more than 3 and less than 2 argument is given - print warning
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "assign_exhibit"):
-        # check correct number of arguments
-        if len(arguments) == 3:
-            # Try to cast argument[2] to int  
-            try: 
-                int(arguments[2])
-            except ValueError as e:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-                return
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
-                assign_exhibit(arguments[1], int(arguments[2]))
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "unassign_exhibit"):
-        # check correct number of arguments
-        if len(arguments) == 3:
-            # Try to cast argument[2] to int  
-            try: 
-                int(arguments[2])
-            except ValueError as e:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-                return
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
-                unassign_exhibit(arguments[1], int(arguments[2]))
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "rename_exhibit"):
-        # check correct number of arguments
-        if len(arguments) == 3:
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and arguments[2].isalnum()):
-                rename_exhibit(arguments[1], arguments[2])
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "move_exhibit"):
-        # check correct number of arguments
-        if len(arguments) == 4:
-            # Try to cast argument[2] to int  
-            try: 
-                int(arguments[2])
-                int(arguments[3])
-            except ValueError as e:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-                return
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int) and isinstance(int(arguments[3]), int)):
-                move_exhibit(arguments[1], int(arguments[2]), int(arguments[3]))
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "delete_exhibit"):
-        # check correct number of arguments
-        if len(arguments) == 3:
-            # Try to cast argument[2] to int  
-            try: 
-                int(arguments[2])
-            except ValueError as e:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-                return
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and isinstance(int(arguments[2]), int)):
-                delete_exhibit(arguments[1], int(arguments[2]))
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "add_animal"):
-        # check correct number of arguments
-        if len(arguments) == 3:
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and arguments[2].isalnum()):
-                add_animal(arguments[1], arguments[2])
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.") 
-    elif (arguments[0] == "delete_animal"):
-        # check correct number of arguments
-        if len(arguments) == 3:
-            # check if arguments are valid 
-            if (arguments[1].isalnum() and arguments[2].isalnum()):
-                delete_animal(arguments[1], arguments[2])
-            else:
-                print("At least one argument is invalid. Please, review the command arguments and try again.")
-        else:
-            print("Incorrect number of arguments for the command.")
-    elif (arguments[0] == "report_zoo"):
-        report_zoo()
-    elif (arguments[0] == "report_unassigned_exhibits"):
-        report_unassigned_exhibits()
-    else:
-        print("Unknown command. Please, enter help to check the available options.")
-
+    for n in SECTION_NAMES:
+        if exhibit_name in zoo[n]:
+            return n 
 
 def get_exhibit_names() -> list:
     assigned_names = [n for s in zoo.keys() for n in list(zoo[s].keys())]
@@ -151,14 +31,80 @@ def get_unassigned_animals() -> list:
     unassigned_animals = [a for s in unassigned_exhibits.keys() for a in unassigned_exhibits[s]]
     return unassigned_animals
 
+def args_are_valid(function_args: list) -> bool:
+    function_name = function_args[0]
+    if not len(function_args) in arg_parser[function_name][0]: # check argument number
+        print("Incorrect number of arguments for the command.")
+        return False
+    for i in range(1, len(function_args)):
+        expected_type = arg_parser[function_name][1][i-1]
+        try:
+            expected_type(function_args[i]) # check the arg cast
+        except ValueError as e:
+            print("At least one argument is invalid. Please, review the command arguments and try again.")
+            return False
+        if expected_type == str and not function_args[i].replace("_", "").isalnum(): # check if str args are alphanumeric ('_' allowed)
+            print("Command name is not valid. Please, review the command name and try again.")
+            return False
+    return True
 
-## Required functions:
+def convert_args(function_args: list) -> list: # convert args into the required format
+    function_name = function_args[0]
+    converted_args = []
+    for i in range(1, len(function_args)):
+        expected_output = arg_parser[function_name][1][i-1]
+        converted_args.append(expected_output(function_args[i]))
+    return converted_args
 
+def process_input(input):
+    # Split the line into words
+    arguments = input.split(" ")
+    print(f"Given Arguments: {arguments}")
+
+    if arguments[0] in arg_parser.keys():
+        launch_func = arg_parser[arguments[0]][2]
+        if args_are_valid(arguments):
+            launch_func(*convert_args(arguments))
+    else:
+        print("Unknown command. Please, enter help to check the available options.")
+
+def save_json_file(filename: str, d: dict) -> None:
+    try:
+        f = open(f"{filename}.json", 'w')
+        json.dump(d, f, indent=4)
+    except:
+        print("Warning: An error occurred while saving the zoo")
+
+def load_zoo_from_json(filename: str) -> dict:
+    try:
+        with open(f"{filename}.json") as json_file:
+            d = json.load(json_file)
+            return d
+    except:
+        print("Warning: There was an error loading the zoo")
+    
+
+def zoo_structure_is_valid(input_zoo: dict) -> bool:
+    if len(input_zoo.keys()) != 9: # 9 sections
+        return False
+    for section_id, exhibits in input_zoo.items():
+        if not int(section_id) in SECTION_NAMES: # same section names
+            return False
+        if len(exhibits) > MAX_EXHIBITS_PER_SECTION: # more than 4 exhibits
+            return False
+        for exhibit_id, animals in exhibits.items():
+            if not exhibit_id.replace("_", "").isalnum():
+                return False
+            if len(animals) > MAX_ANIMAL_PER_EXHIBIT:
+                return False
+    return True
+
+# ----- Required functions -----
 def help():
     print("This is the list of commands: bla bla")
 
 def add_exhibit(exhibit_name: str, section_id=None):
-    if (section_id != None and section_id in [1,2,3,4,5,6,7,8,9]):
+    if (section_id != None and section_id in SECTION_NAMES):
         zoo[section_id][exhibit_name] = []
         print("Exhibit " + exhibit_name + " added to section " + str(section_id))
     elif section_id == None:
@@ -169,9 +115,9 @@ def add_exhibit(exhibit_name: str, section_id=None):
         print("Warning: Invalid section ID")
 
 def assign_exhibit(exhibit_name: str, section_id: int):
-    if section_id not in [1,2,3,4,5,6,7,8,9]:
+    if section_id not in SECTION_NAMES:
         print("Error: Invalid section ID")
-    elif len(zoo[section_id]) <= 4:
+    elif len(zoo[section_id]) <= MAX_EXHIBITS_PER_SECTION:
         try:
             zoo[section_id][exhibit_name] = unassigned_exhibits[exhibit_name]
             del unassigned_exhibits[exhibit_name]
@@ -183,7 +129,7 @@ def assign_exhibit(exhibit_name: str, section_id: int):
 
 def unassign_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: unassign an exhibit to a section. Both arguments are mandatory.
-    if not section_id in range(1, 10): 
+    if not section_id in SECTION_NAMES: 
         print("Error: Invalid section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
@@ -214,15 +160,15 @@ def rename_exhibit(exhibit_name: str, new_exhibit_name: str) -> None:
 
 def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int) -> None:
     # Description: move an exhibit to another section.
-    if not current_section_id in range(1, 10): 
+    if not current_section_id in SECTION_NAMES: 
         print("Error: Invalid current section ID")
-    elif not new_section_id in range(1, 10): 
+    elif not new_section_id in SECTION_NAMES: 
         print("Error: Invalid new section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
     elif not exhibit_name in list(zoo[current_section_id].keys()):
         print(f"Error: {exhibit_name} was not found on section {current_section_id}")
-    elif len(zoo[new_section_id]) > 4:
+    elif len(zoo[new_section_id]) > MAX_EXHIBITS_PER_SECTION:
         print("Error: The new section selected is full")
     else:
         exhibit = zoo[current_section_id].pop(exhibit_name)
@@ -231,7 +177,7 @@ def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int
 
 def delete_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: delete an exhibit stored.
-    if not section_id in range(1, 10): 
+    if not section_id in SECTION_NAMES: 
         print("Error: Invalid section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
@@ -241,18 +187,17 @@ def delete_exhibit(exhibit_name: str, section_id: int) -> None:
         zoo[section_id].pop(exhibit_name)
         print(f"Exhibit {exhibit_name} was deleted")
 
-
 def add_animal(animal_name: str, exhibit_name: str):
     section_id = find_section(exhibit_name)
     if section_id == None:
         print("Exhibit name: " + exhibit_name + " not found in assigned exhibits")
-        if len(unassigned_exhibits[exhibit_name]) < 5:
+        if len(unassigned_exhibits[exhibit_name]) < MAX_ANIMAL_PER_EXHIBIT:
             unassigned_exhibits[exhibit_name].append(animal_name)
             print("Animal " + animal_name + " added to unassigned exhibition " + exhibit_name)
         else:
             print("Error: The exhibit selected (" + exhibit_name + ") is full.")  
             print("Animal " + animal_name + " cannot be added") 
-    elif len(zoo[section_id][exhibit_name]) < 5:
+    elif len(zoo[section_id][exhibit_name]) < MAX_ANIMAL_PER_EXHIBIT:
         zoo[section_id][exhibit_name].append(animal_name)
         print("Animal " + animal_name + " added to exhibition " + exhibit_name)
     else:
@@ -295,23 +240,56 @@ def report_unassigned_exhibits():
     print("List of unassigned exhibits:")
     print(unassigned_exhibits)
 
+def save_zoo(zoo_name: str = "new_zoo") -> None:
+    if f"{zoo_name}.json" in os.listdir():
+        savefile_in = ""
+        while not savefile_in in ["y", "n", "Y", "N"]:
+            savefile_in = input(f"The zoo '{zoo_name}' already exists. Do you want to overwrite it? y/n:")
+        if savefile_in in ["y", "Y"]:
+            save_json_file(zoo_name, zoo)
+            print(f"Zoo '{zoo_name}' saved")
+        else:
+            print(f"Zoo '{zoo_name}' not saved")
+    else:
+        save_json_file(zoo_name, zoo)
+        print(f"Zoo '{zoo_name}' saved")
 
+def load_zoo(zoo_name: str) -> None:
+    global zoo
+    if not f"{zoo_name}.json" in os.listdir():
+        print("Warning: The file was not found")
+    else:
+        loaded_zoo = load_zoo_from_json(zoo_name)
+        if loaded_zoo:
+            if zoo_structure_is_valid(loaded_zoo):
+                zoo = loaded_zoo
+            else:
+                print("Warning: The file does not have valid zoo information")
+
+# ----- Main -----
 def main(filename: Optional[str] = typer.Argument(None)):
 
     # Define the dicts
-    global zoo, unassigned_exhibits
-    zoo = {
-            1: {},
-            2: {},
-            3: {},
-            4: {},
-            5: {},
-            6: {},
-            7: {},
-            8: {},
-            9: {},
-    }
+    global zoo, unassigned_exhibits, arg_parser
+    zoo = {}
+    for s in SECTION_NAMES:
+        zoo.update({s:{}})
     unassigned_exhibits = {}
+    arg_parser = {  # funct_name: ([allowed_lens], [allowed_formats], launch_function)
+        "help" : ([1], [], help),
+        "add_exhibit" : ([2,3], [str, int], add_exhibit),
+        "assign_exhibit" : ([3], [str, int], assign_exhibit),
+        "unassign_exhibit" : ([3], [str, int], unassign_exhibit),
+        "rename_exhibit" : ([3], [str, str], rename_exhibit),
+        "move_exhibit" : ([4], [str, int, int], move_exhibit),
+        "delete_exhibit" : ([3], [str, int], delete_exhibit),
+        "add_animal" : ([3], [str, str], add_animal),
+        "delete_animal" : ([3], [str, str], delete_animal),
+        "report_zoo" : ([1], [], report_zoo),
+        "report_unassigned_exhibits" : ([1], [], report_unassigned_exhibits),
+        "save_zoo" : ([1,2], [str], save_zoo),
+        "load_zoo" : ([2], [str], load_zoo)
+    }
     
     if filename:
         with open(str(filename + ".txt")) as file:

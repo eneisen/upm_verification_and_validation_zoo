@@ -20,3 +20,6 @@ add_exhibit china 5
 add_animal panda china
 delete_exhibit bird_exhibit 1
 report_zoo
+save_zoo
+load_zoo wrong_zoo
+load_zoo new_zoo
