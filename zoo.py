@@ -11,6 +11,7 @@ unassigned_exhibits = None
 MAX_ANIMAL_PER_EXHIBIT = 5
 MAX_EXHIBITS_PER_SECTION = 4
 SECTION_NAMES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+MAX_COMMANDS = 20
 
 # ----- Helper functions -----
 def find_section(exhibit_name: str):
@@ -306,15 +307,18 @@ def main(filename: Optional[str] = typer.Argument(None)):
     }
     
     if filename:
-        with open(str(filename + ".txt")) as file:
-
+        with open(str(filename + ".txt")) as file:         
             # Process each line after the other of the document
-            while (line := file.readline().rstrip()):
+            arg_count = 0
+            while ((line := file.readline().rstrip()) and arg_count < MAX_COMMANDS) :
 
                 # Convert the characters in line to lowercase to avoid case mismatch
                 line = line.lower()
 
-                process_input(line)         
+                process_input(line)  
+                arg_count += 1  
+            if arg_count == MAX_COMMANDS:
+                print("Warning: Only the first 20 commands can be processed, no more commands will be processed!")
     else:
         while True:
             inp = input("Write commands (command argument_1 argument_2) [to exit type 'quit']: ")
