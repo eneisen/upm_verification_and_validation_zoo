@@ -61,7 +61,11 @@ def process_input(input):
     arguments = input.split(" ")
     print(f"Given Arguments: {arguments}")
 
-    if arguments[0] in arg_parser.keys():
+    if arguments[0] == "help":
+        help()
+        if len(arguments) > 1:
+            print("Warning: The command help does not allow any argument.")
+    elif arguments[0] in arg_parser.keys():
         launch_func = arg_parser[arguments[0]][2]
         if args_are_valid(arguments):
             launch_func(*convert_args(arguments))
@@ -287,7 +291,6 @@ def main(filename: Optional[str] = typer.Argument(None)):
         zoo.update({s:{}})
     unassigned_exhibits = {}
     arg_parser = {  # funct_name: ([allowed_lens], [allowed_formats], launch_function)
-        "help" : ([1], [], help),
         "add_exhibit" : ([2,3], [str, int], add_exhibit),
         "assign_exhibit" : ([3], [str, int], assign_exhibit),
         "unassign_exhibit" : ([3], [str, int], unassign_exhibit),

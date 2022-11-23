@@ -23,3 +23,5 @@ report_zoo
 save_zoo
 load_zoo wrong_zoo
 load_zoo new_zoo
+add_exhibit bird_exhibit$. 2
+help blabla blabla
