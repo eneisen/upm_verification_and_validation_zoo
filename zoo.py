@@ -128,7 +128,7 @@ def add_exhibit(exhibit_name: str, section_id=None):
         print("Exhibition " + exhibit_name +" added to list of unassigned exhibits")
 
     else:
-        print("Warning: Invalid section ID")
+        print("Warning: The section ID must be between 1 and 9")
 
 def assign_exhibit(exhibit_name: str, section_id: int):
     if section_id not in SECTION_NAMES:
