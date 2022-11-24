@@ -133,7 +133,7 @@ def add_exhibit(exhibit_name: str, section_id=None):
 def assign_exhibit(exhibit_name: str, section_id: int):
     if section_id not in SECTION_NAMES:
         print("Error: The section ID must be between 1 and 9")
-    elif len(zoo[section_id]) <= MAX_EXHIBITS_PER_SECTION:
+    elif len(zoo[section_id]) < MAX_EXHIBITS_PER_SECTION:
         try:
             zoo[section_id][exhibit_name] = unassigned_exhibits[exhibit_name]
             del unassigned_exhibits[exhibit_name]
@@ -184,7 +184,7 @@ def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int
         print("Error:  Exhibit not found")
     elif not exhibit_name in list(zoo[current_section_id].keys()):
         print(f"Error: {exhibit_name} was not found on section {current_section_id}")
-    elif len(zoo[new_section_id]) > MAX_EXHIBITS_PER_SECTION:
+    elif len(zoo[new_section_id]) >= MAX_EXHIBITS_PER_SECTION:
         print("Error: The new section selected is full")
     else:
         exhibit = zoo[current_section_id].pop(exhibit_name)
@@ -193,38 +193,44 @@ def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int
 
 def delete_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: delete an exhibit stored.
-    if not section_id in SECTION_NAMES: 
-        print("Error: The section ID must be between 1 and 9")
+    if not section_id in SECTION_NAMES:
+        print("Error: Invalid section ID")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
     elif not exhibit_name in list(zoo[section_id].keys()):
         print(f"Error: {exhibit_name} was not found on section {section_id}")
     else:
-        zoo[section_id].pop(exhibit_name)
-        print(f"Exhibit {exhibit_name} was deleted")
+        if len(zoo[section_id][exhibit_name]) != 0:
+            print(f"Error: Exhibit {exhibit_name} is not empty and cannot be deleted")
+        else:
+            zoo[section_id].pop(exhibit_name)
+            print(f"Exhibit {exhibit_name} was deleted")
 
 def add_animal(animal_name: str, exhibit_name: str):
-    section_id = find_section(exhibit_name)
-    if section_id == None:
-        print("Exhibit name: " + exhibit_name + " not found in assigned exhibits")
-        if len(unassigned_exhibits[exhibit_name]) < MAX_ANIMAL_PER_EXHIBIT:
-            unassigned_exhibits[exhibit_name].append(animal_name)
-            print("Animal " + animal_name + " added to unassigned exhibition " + exhibit_name)
+    if exhibit_name not in get_exhibit_names():
+        print("Warning: Exhibit not found")
+    else:
+        section_id = find_section(exhibit_name)
+        if section_id == None:
+            print("Exhibit name: " + exhibit_name + " not found in assigned exhibits")
+            if len(unassigned_exhibits[exhibit_name]) < MAX_ANIMAL_PER_EXHIBIT:
+                unassigned_exhibits[exhibit_name].append(animal_name)
+                print("Animal " + animal_name + " added to unassigned exhibition " + exhibit_name)
+            else:
+                print("Error: The exhibit selected (" + exhibit_name + ") is full.")  
+                print("Animal " + animal_name + " cannot be added")
+        elif len(zoo[section_id][exhibit_name]) < MAX_ANIMAL_PER_EXHIBIT:
+            zoo[section_id][exhibit_name].append(animal_name)
+            print("Animal " + animal_name + " added to exhibition " + exhibit_name)
         else:
             print("Error: The exhibit selected (" + exhibit_name + ") is full.")  
             print("Animal " + animal_name + " cannot be added") 
-    elif len(zoo[section_id][exhibit_name]) < MAX_ANIMAL_PER_EXHIBIT:
-        zoo[section_id][exhibit_name].append(animal_name)
-        print("Animal " + animal_name + " added to exhibition " + exhibit_name)
-    else:
-        print("Error: The exhibit selected (" + exhibit_name + ") is full.")  
-        print("Animal " + animal_name + " cannot be added") 
 
 def delete_animal(animal_name: str, exhibit_name: str):
     # check if exhibit exits
     if not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
-    # check if animal exists 
+    # check if animal exists
     elif animal_name not in get_assigned_animals() and animal_name not in get_unassigned_animals():
         print("Error: Animal " + animal_name + " not found")
     else:
@@ -234,7 +240,7 @@ def delete_animal(animal_name: str, exhibit_name: str):
         if section_id == None:
             print("Animal: " + animal_name + " not found in assigned exhibits")
             # check if animal exists in given exhibit
-            if animal_name in get_unassigned_animals():
+            if animal_name in unassigned_exhibits[exhibit_name]:
                 unassigned_exhibits[exhibit_name].remove(animal_name)
                 print(f"{animal_name} was removed from unassigned exhibit {exhibit_name}")
             else:
@@ -242,7 +248,7 @@ def delete_animal(animal_name: str, exhibit_name: str):
         # section_id exists
         else:
             # check if animal exists in given exhibit
-            if animal_name in get_assigned_animals():
+            if animal_name in zoo[section_id][exhibit_name]:
                 zoo[section_id][exhibit_name].remove(animal_name)
                 print(f"{animal_name} was removed from assigned exhibit {exhibit_name}")
             else:
