@@ -128,11 +128,11 @@ def add_exhibit(exhibit_name: str, section_id=None):
         print("Exhibition " + exhibit_name +" added to list of unassigned exhibits")
 
     else:
-        print("Warning: Invalid section ID")
+        print("Warning: The section ID must be between 1 and 9")
 
 def assign_exhibit(exhibit_name: str, section_id: int):
     if section_id not in SECTION_NAMES:
-        print("Error: Invalid section ID")
+        print("Error: The section ID must be between 1 and 9")
     elif len(zoo[section_id]) <= MAX_EXHIBITS_PER_SECTION:
         try:
             zoo[section_id][exhibit_name] = unassigned_exhibits[exhibit_name]
@@ -146,7 +146,7 @@ def assign_exhibit(exhibit_name: str, section_id: int):
 def unassign_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: unassign an exhibit to a section. Both arguments are mandatory.
     if not section_id in SECTION_NAMES: 
-        print("Error: Invalid section ID")
+        print("Error: The section ID must be between 1 and 9")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
     elif not exhibit_name in list(zoo[section_id].keys()):
@@ -177,9 +177,9 @@ def rename_exhibit(exhibit_name: str, new_exhibit_name: str) -> None:
 def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int) -> None:
     # Description: move an exhibit to another section.
     if not current_section_id in SECTION_NAMES: 
-        print("Error: Invalid current section ID")
+        print("Error: The current section ID must be between 1 and 9")
     elif not new_section_id in SECTION_NAMES: 
-        print("Error: Invalid new section ID")
+        print("Error: The new section ID must be between 1 and 9")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
     elif not exhibit_name in list(zoo[current_section_id].keys()):
@@ -194,7 +194,7 @@ def move_exhibit(exhibit_name: str, current_section_id: int, new_section_id: int
 def delete_exhibit(exhibit_name: str, section_id: int) -> None:
     # Description: delete an exhibit stored.
     if not section_id in SECTION_NAMES: 
-        print("Error: Invalid section ID")
+        print("Error: The section ID must be between 1 and 9")
     elif not exhibit_name in get_exhibit_names():
         print("Error:  Exhibit not found")
     elif not exhibit_name in list(zoo[section_id].keys()):
